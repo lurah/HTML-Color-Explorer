@@ -207,7 +207,8 @@ def semua():
 def tengah():
     lk_tengah = APIRouter()
     @lk_tengah.post("/tengah")
-    def ftengah(red:str, green: str, blue: str, hue:str, saturation:str, lightness:str,
+    def ftengah(red:str, green: str, blue: str, 
+                hue:str, saturation:str, lightness:str,
                 data_cmp:str):
         #data_cmp = "rgb"
         if data_cmp == "hsl":
