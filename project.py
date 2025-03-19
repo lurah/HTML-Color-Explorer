@@ -16,51 +16,38 @@ class Warna():
     def hslnya(self):
         return self.rgb_to_hsl(self.warnanya())
 
-
-    def slider_rgb_cmp(self, color: str):
-        filt = [item for item in ["#red", "#green", "#blue"] if item != f"#{color}"]
-        incl = ", ".join(filt) + ", #hue, #saturation, #lightness"
-        prm = {"type":"range", "min":"0", "max":"255", "hx_swap":"innerHTML",
-               "hx_post":"/tengah", "hx_trigger":"input", "hx_target":"#tengah"}
-        lbl = Label(f"{color.capitalize()}:", fr=color)
-        inp = Input(id=color, name=color, value=getattr(self, color), 
-                    hx_include=incl, hx_vals='{"data_cmp":"rgb"}', **prm)
-        div_sty = f"display: flex; flex-direction: column; justify-content: flex-start; \
-                    margin: 5px;"
-        return Div(lbl, inp, style=div_sty)
-        
-    def slider_rgb(self):
-        sty = f"display: flex; flex-direction: column; justify-content: flex-start; \
-                align-items: center; border: 1px solid black; margin: 10px; \
-                padding: 5px; min-width: 150px; max-width: 200px;"
-        return Div(self.slider_rgb_cmp("red"), self.slider_rgb_cmp("green"),
-                    self.slider_rgb_cmp("blue"), style=sty)
-    
-    def slider_hsl_cmp(self, hsl: str):
-        nilai = self.hslnya()[hsl]
-        maks = "360" if hsl == "hue" else "100"
-        #print(nilai, maks)
-        filt = [item for item in ["#hue", "#saturation", "#lightness"] if item != f"#{hsl}"]
-        incl = ", ".join(filt) + ", #red, #green, #blue"
+    def slider_cmp(self, tipe:str, rgbhsl:str):
+        if tipe == "rgb":
+            nilai = getattr(self, rgbhsl)
+            maks = "255"
+            filt = [item for item in ["#red", "#green", "#blue"] if item != f"#{rgbhsl}"]
+            incl = ", ".join(filt) + ", #hue, #saturation, #lightness"
+            vals = '{"data_cmp":"rgb"}'
+        else:
+            nilai = self.hslnya()[rgbhsl]
+            maks = "360" if rgbhsl == "hue" else "100"
+            filt = [item for item in ["#hue", "#saturation", "#lightness"] if item != f"#{rgbhsl}"]
+            incl = ", ".join(filt) + ", #red, #green, #blue"
+            vals = '{"data_cmp":"hsl"}'
         prm = {"type":"range", "min":"0", "max":maks, "hx_swap":"innerHTML",
-               "hx_post":"/tengah", "hx_trigger":"input", "hx_target":"#tengah"}
-        lbl = Label(f"{hsl.capitalize()}:", fr=hsl)
-        inp = Input(id=hsl, name=hsl, value=nilai, 
-                    hx_include=incl, hx_vals='{"data_cmp":"hsl"}', **prm)
+               "hx_post":"/tengah", "hx_trigger":"input", "hx_target":"#tengah",
+               "hx_include":incl, "hx_vals":vals,}
+        lbl = Label(f"{rgbhsl.capitalize()}:", fr=rgbhsl)
+        inp = Input(id=rgbhsl, name=rgbhsl, value=nilai, **prm)
         div_sty = f"display: flex; flex-direction: column; justify-content: flex-start; \
                     margin: 5px;"
         return Div(lbl, inp, style=div_sty)
-    
-    def slider_hsl(self):
-        sty = f"display: flex; flex-direction: column; justify-content: flex-start; \
-                align-items: center; border: 1px solid black; margin: 10px; \
-                padding: 5px; min-width: 150px; max-width: 200px;"
-        return Div(self.slider_hsl_cmp("hue"), self.slider_hsl_cmp("saturation"),
-                    self.slider_hsl_cmp("lightness"), style=sty)
     
     def slider(self):
+        sty_rgb_hsl = f"display: flex; flex-direction: column; justify-content: flex-start; \
+                align-items: center; border: 1px solid black; margin: 10px; \
+                padding: 5px; min-width: 150px; max-width: 200px;"
+        rgb = Div(self.slider_cmp("rgb","red"), self.slider_cmp("rgb","green"),
+                  self.slider_cmp("rgb","blue"), style=sty_rgb_hsl)
+        hsl = Div(self.slider_cmp("hsl","hue"), self.slider_cmp("hsl","saturation"),
+                  self.slider_cmp("hsl","lightness"), style=sty_rgb_hsl)
         sty = f"display: flex; flex-direction: column; justify-content: flex-start;"
-        return Div(self.slider_rgb(), self.slider_hsl(), style=sty)
+        return Div(rgb, hsl, style=sty)
 
     def kotak_warna(self):
         sty = f"width: 60%; height: 50px; background-color: {self.warnanya()}; \
@@ -76,7 +63,7 @@ class Warna():
 
     def div_sty(self):
         return f"display: flex; flex-direction: column; align-items: center; margin: 0 5px; \
-                    min-width: 50px; padding: 5px; border: 1px solid "
+                 min-width: 50px; padding: 5px; border: 1px solid "
     
     def judul_sty(self):
         return f"margin: 15px auto 5px auto; color: {self.warnanya()};"
@@ -116,7 +103,7 @@ class Warna():
 
     def tengah(self):
         sty = f"display: flex; flex-direction: column; align-items: center; \
-                margin: 10px; padding: 0 5px 0 5px; border: 1px solid {self.warnanya()}; "
+                margin: 10px; padding: 0 5px 0 5px; border: 1px solid black; "
         return Div(self.kotak_warna(), self.rgb(), self.hsl(), id="tengah", style=sty)
     
 
