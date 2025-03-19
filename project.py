@@ -53,58 +53,46 @@ class Warna():
         sty = f"width: 60%; height: 50px; background-color: {self.warnanya()}; \
                 border: 1px solid {self.warnanya()}; margin: 30px auto 10px auto;"
         return Div(id="warna", style=sty)
-    
+   
+    def teks_cmp(self, tipe:str, rgbhsl:str):
+        if tipe == "rgb":
+            warna = rgbhsl
+            nilai = getattr(self, rgbhsl)
+        else:
+            warna = self.warnanya()
+            nilai = self.hslnya()[rgbhsl]
 
-    def lbl_sty(self):
-        return f"display: block; text-align: center; color: "
-    
-    def inp_sty(self):
-        return f"height: 16px; margin: 3px 0; width: 25px; border: none; text-align: center; color: "
+        lbl_sty = f"display: block; text-align: center; color: {warna}"
+        inp_sty = f"height: 16px; margin: 3px 0; width: 25px; border: none; \
+                    text-align: center; color: {warna}"
+        div_sty = f"display: flex; flex-direction: column; align-items: center; margin: 0 5px; \
+                    min-width: 50px; padding: 5px; border: 1px solid {warna}"
 
-    def div_sty(self):
-        return f"display: flex; flex-direction: column; align-items: center; margin: 0 5px; \
-                 min-width: 50px; padding: 5px; border: 1px solid "
+        lbl = Label(f"{rgbhsl.capitalize()}", fr=f"rgb_{rgbhsl}", style=lbl_sty)
+        inp = Input(name=f"rgb_{rgbhsl}", id=f"rgb_{rgbhsl}", type="text",
+                    value=nilai, style=inp_sty)
+        return Div(inp, lbl, style=div_sty)
     
-    def judul_sty(self):
-        return f"margin: 15px auto 5px auto; color: {self.warnanya()};"
-    
-    def each_sty(self):
-        return f"display: flex; justify-content: center;"
-    
-    def all_sty(self):
-        return f"display: flex; flex-direction: column; justify-content: center; \
-                 align-items: center; margin: 0px auto 10px auto;"
-    
-    def rgb_cmp(self, color: str):
-        lbl = Label(f"{color.capitalize()}", fr=f"rgb_{color}", style=self.lbl_sty()+f"{color};") 
-        inp = Input(name=f"rgb_{color}", id=f"rgb_{color}", type="text",
-                    value=getattr(self, color), style=self.inp_sty()+f"{color};")
-        return Div(inp, lbl, style=self.div_sty()+f"{color};")
-    
-    def rgb(self):
-        judul = H3("RGB Value", style=self.judul_sty())
-        return Div(judul, 
-                   Div(self.rgb_cmp("red"), self.rgb_cmp("green"),
-                       self.rgb_cmp("blue"), style=self.each_sty()),
-                       style=self.all_sty())
-    
-    def hsl_cmp(self, prm: str):
-        lbl = Label(f"{prm.capitalize()}", fr=f"{prm}", style=self.lbl_sty()+f"{self.warnanya()};")
-        inp = Input(name=f"{prm}", id=f"{prm}", type="text",
-                    value=f"{self.hslnya()[prm]}", style=self.inp_sty()+f"{self.warnanya()};")
-        return Div(inp, lbl, style=self.div_sty()+f"{self.warnanya()};")
-    
-    def hsl(self):        
-        judul = H3("HSL Value", style=self.judul_sty())
-        return Div(judul, 
-                   Div(self.hsl_cmp("hue"), self.hsl_cmp("saturation"), 
-                       self.hsl_cmp("lightness"), style=self.each_sty()), 
-                   style=self.all_sty())
+    def teks(self, tipe:str):
+        judul_sty = f"margin: 15px auto 5px auto; color: {self.warnanya()};"
+        each_sty = f"display: flex; justify-content: center;"
+        all_sty = f"display: flex; flex-direction: column; justify-content: center; \
+                    align-items: center; margin: 0px auto 10px auto;"
+        
+        jdl_teks = "RGB Value" if tipe == "rgb" else "HSL Value"
+        judul = H3(jdl_teks, style=judul_sty)
+        if tipe == "rgb":
+            teks = Div(self.teks_cmp(tipe,"red"), self.teks_cmp(tipe,"green"),
+                       self.teks_cmp(tipe,"blue"), style=each_sty)
+        else:
+            teks = Div(self.teks_cmp(tipe,"hue"), self.teks_cmp(tipe,"saturation"),
+                       self.teks_cmp(tipe,"lightness"), style=each_sty)
+        return Div(judul, teks, style=all_sty)
 
     def tengah(self):
         sty = f"display: flex; flex-direction: column; align-items: center; \
                 margin: 10px; padding: 0 5px 0 5px; border: 1px solid black; "
-        return Div(self.kotak_warna(), self.rgb(), self.hsl(), id="tengah", style=sty)
+        return Div(self.kotak_warna(), self.teks("rgb"), self.teks("hsl"), id="tengah", style=sty)
     
 
     def semua(self):
@@ -230,7 +218,7 @@ def tengah():
             warna = {"red":red, "green":green, "blue":blue}
         #print(warna)
         kotak = Warna(**warna)
-        return kotak.kotak_warna(), kotak.rgb(), kotak.hsl()
+        return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl")
         #return kotak.tengah()
     return lk_tengah
 
