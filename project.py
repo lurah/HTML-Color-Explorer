@@ -24,7 +24,7 @@ class Warna():
                "hx_post":"/tengah", "hx_trigger":"input", "hx_target":"#tengah"}
         lbl = Label(f"{color.capitalize()}:", fr=color)
         inp = Input(id=color, name=color, value=getattr(self, color), 
-                    hx_include=incl, **prm)
+                    hx_include=incl, hx_vals='{"data_cmp":"rgb"}', **prm)
         div_sty = f"display: flex; flex-direction: column; justify-content: flex-start; \
                     margin: 5px;"
         return Div(lbl, inp, style=div_sty)
@@ -39,14 +39,14 @@ class Warna():
     def slider_hsl_cmp(self, hsl: str):
         nilai = self.hslnya()[hsl]
         maks = "360" if hsl == "hue" else "100"
-        print(nilai, maks)
+        #print(nilai, maks)
         filt = [item for item in ["#hue", "#saturation", "#lightness"] if item != f"#{hsl}"]
         incl = ", ".join(filt) + ", #red, #green, #blue"
         prm = {"type":"range", "min":"0", "max":maks, "hx_swap":"innerHTML",
                "hx_post":"/tengah", "hx_trigger":"input", "hx_target":"#tengah"}
         lbl = Label(f"{hsl.capitalize()}:", fr=hsl)
         inp = Input(id=hsl, name=hsl, value=nilai, 
-                    hx_include=incl, **prm)
+                    hx_include=incl, hx_vals='{"data_cmp":"hsl"}', **prm)
         div_sty = f"display: flex; flex-direction: column; justify-content: flex-start; \
                     margin: 5px;"
         return Div(lbl, inp, style=div_sty)
@@ -232,8 +232,16 @@ def semua():
 def tengah():
     lk_tengah = APIRouter()
     @lk_tengah.post("/tengah")
-    def ftengah(red:str, green: str, blue: str, hue:str, saturation:str, lightness:str):
-        warna = {"red":red, "green": green, "blue": blue}
+    def ftengah(red:str, green: str, blue: str, hue:str, saturation:str, lightness:str,
+                data_cmp:str):
+        #data_cmp = "rgb"
+        if data_cmp == "hsl":
+            hsl = (int(hue), int(saturation), int(lightness))
+            rgb = Warna.hsl_to_rgb(*hsl)
+            warna = {"red":rgb[0], "green":rgb[1], "blue":rgb[2]}
+        else:
+            warna = {"red":red, "green":green, "blue":blue}
+        #print(warna)
         kotak = Warna(**warna)
         return kotak.kotak_warna(), kotak.rgb(), kotak.hsl()
         #return kotak.tengah()
@@ -247,5 +255,5 @@ def main():
 
 
 if __name__ == "__main__":
-    uvicorn.run("project12:main", host="127.0.0.1", port=8000, reload=True, factory=True)
+    uvicorn.run("project:main", host="127.0.0.1", port=8000, reload=True, factory=True)
     
