@@ -33,21 +33,30 @@ class Warna():
                "hx_post":"/tengah", "hx_trigger":"input", "hx_target":"#tengah",
                "hx_include":incl, "hx_vals":vals,}
         lbl = Label(f"{rgbhsl.capitalize()}:", fr=rgbhsl)
-        inp = Input(id=rgbhsl, name=rgbhsl, value=nilai, **prm)
+        inp = Input(id=rgbhsl, name=rgbhsl, value=f"{nilai}", **prm)
         div_sty = f"display: flex; flex-direction: column; justify-content: flex-start; \
                     margin: 5px;"
         return Div(lbl, inp, style=div_sty)
     
-    def slider(self):
+    def slider_rgb(self):
         sty_rgb_hsl = f"display: flex; flex-direction: column; justify-content: flex-start; \
-                align-items: center; border: 1px solid black; margin: 10px; \
-                padding: 5px; min-width: 150px; max-width: 200px;"
-        rgb = Div(self.slider_cmp("rgb","red"), self.slider_cmp("rgb","green"),
-                  self.slider_cmp("rgb","blue"), style=sty_rgb_hsl)
-        hsl = Div(self.slider_cmp("hsl","hue"), self.slider_cmp("hsl","saturation"),
-                  self.slider_cmp("hsl","lightness"), style=sty_rgb_hsl)
+                        align-items: center; border: 1px solid black; margin: 10px; \
+                        padding: 5px; min-width: 150px; max-width: 200px;"
+        return Div(self.slider_cmp("rgb","red"), self.slider_cmp("rgb","green"),
+                   self.slider_cmp("rgb","blue"), id="sldrgb", hx_swap_oob="innerHTML",
+                   style=sty_rgb_hsl)
+    
+    def slider_hsl(self):
+        sty_rgb_hsl = f"display: flex; flex-direction: column; justify-content: flex-start; \
+                        align-items: center; border: 1px solid black; margin: 10px; \
+                        padding: 5px; min-width: 150px; max-width: 200px;"
+        return Div(self.slider_cmp("hsl","hue"), self.slider_cmp("hsl","saturation"),
+                   self.slider_cmp("hsl","lightness"),  id="sldhsl", hx_swap_oob="innerHTML",
+                   style=sty_rgb_hsl)
+    
+    def slider(self):
         sty = f"display: flex; flex-direction: column; justify-content: flex-start;"
-        return Div(rgb, hsl, style=sty)
+        return Div(self.slider_rgb(), self.slider_hsl(), style=sty)
 
     def kotak_warna(self):
         sty = f"width: 60%; height: 50px; background-color: {self.warnanya()}; \
@@ -70,7 +79,7 @@ class Warna():
 
         lbl = Label(f"{rgbhsl.capitalize()}", fr=f"rgb_{rgbhsl}", style=lbl_sty)
         inp = Input(name=f"rgb_{rgbhsl}", id=f"rgb_{rgbhsl}", type="text",
-                    value=nilai, style=inp_sty)
+                    value=f"{nilai}", style=inp_sty)
         return Div(inp, lbl, style=div_sty)
     
     def teks(self, tipe:str):
@@ -193,7 +202,6 @@ class Warna():
             r = hue_to_rgb(p, q, h + 1/3)
             g = hue_to_rgb(p, q, h)
             b = hue_to_rgb(p, q, h - 1/3)
-
         return (round(r * 255), round(g * 255), round(b * 255))
 
 def semua():
@@ -214,10 +222,14 @@ def tengah():
             hsl = (int(hue), int(saturation), int(lightness))
             rgb = Warna.hsl_to_rgb(*hsl)
             warna = {"red":rgb[0], "green":rgb[1], "blue":rgb[2]}
+            kotak = Warna(**warna)
+            return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl"), kotak.slider_rgb()
         else:
             warna = {"red":red, "green":green, "blue":blue}
-        kotak = Warna(**warna)
-        return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl")
+            kotak = Warna(**warna)
+            return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl"), kotak.slider_hsl()
+        
+        
     return lk_tengah
 
 def main():
