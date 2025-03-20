@@ -210,17 +210,14 @@ def tengah():
     def ftengah(red:str, green: str, blue: str, 
                 hue:str, saturation:str, lightness:str,
                 data_cmp:str):
-        #data_cmp = "rgb"
         if data_cmp == "hsl":
             hsl = (int(hue), int(saturation), int(lightness))
             rgb = Warna.hsl_to_rgb(*hsl)
             warna = {"red":rgb[0], "green":rgb[1], "blue":rgb[2]}
         else:
             warna = {"red":red, "green":green, "blue":blue}
-        #print(warna)
         kotak = Warna(**warna)
         return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl")
-        #return kotak.tengah()
     return lk_tengah
 
 def main():
