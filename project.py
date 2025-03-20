@@ -1,4 +1,5 @@
 import ast
+import kolor
 from fasthtml.common import *
 from starlette.testclient import TestClient
 
