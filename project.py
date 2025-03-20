@@ -222,14 +222,11 @@ def tengah():
             hsl = (int(hue), int(saturation), int(lightness))
             rgb = Warna.hsl_to_rgb(*hsl)
             warna = {"red":rgb[0], "green":rgb[1], "blue":rgb[2]}
-            kotak = Warna(**warna)
-            return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl"), kotak.slider_rgb()
         else:
             warna = {"red":red, "green":green, "blue":blue}
             kotak = Warna(**warna)
-            return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl"), kotak.slider_hsl()
-        
-        
+        return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl"), \
+               kotak.slider_rgb() if data_cmp == "hsl" else kotak.slider_hsl()
     return lk_tengah
 
 def main():
