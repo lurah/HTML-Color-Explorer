@@ -119,27 +119,28 @@ class Warna():
                 flex-wrap: wrap; padding: 2px"
         return Div(*tbl, id="kolor", style=sty)
 
-    def jdl_kl(self):
+    def jdl_kl(self, kl):
         judul = ("Red", "Pink", "Orange", "Yellow", "Purple", "Green", "Blue", "Brown",
                  "White", "Gray")
         sty_sp = f"background-color: paleturquoise; display: inline-block; padding: 4px 6px; \
-                   border-radius: 5%; margin: 2px; font-size: .8rem; font-weight: bold;"
+                   border-radius: 5%; margin: 2px; font-size: .8rem; font-weight: bold; color: black;"
         sepan = []
         for klr in judul:
+            sty_sp_blink = sty_sp if klr != kl.capitalize() else sty_sp + f" color: brown;"
             vals = {"nm_klr":f"{klr.lower()}", "red": f"{self.red}", "green": f"{self.green}",
                     "blue": f"{self.blue}"}
             prm = {"hx_swap":"outerHTML", "hx_post":"/klr_name", "hx_trigger":"click", 
                    "hx_target":"#kolor", "hx_vals":vals}
-            sepan.append(Span(klr, style=sty_sp, **prm))
+            sepan.append(Span(klr, style=sty_sp_blink, **prm))
         sty = f"display: flex; flex-direction: row; justify-content: flex-start; \
-                flex-wrap: wrap; max-width: 300px; margin: 4px;"
-        return Div(*sepan, style = sty)
+                flex-wrap: wrap; max-width: 300px; margin: 4px; background-color: papayawhip"
+        return Div(*sepan, id="jdl_klr", style = sty, hx_swap_oob="outerHTML")
         
     def klr_isi(self):
         sty_klr = f"max-width: 300px;"
         rgb = (int(self.red), int(self.green), int(self.blue))
         pg_klr, _ = Warna.closest_named_color(rgb)
-        return Div(self.jdl_kl(), Hr(style="margin: 0;"), 
+        return Div(self.jdl_kl(f"{pg_klr}"), Hr(style="margin: 0;"), 
                    Div(self.display_tbl_nm_kl(f"{pg_klr}"),style=sty_klr),
                    id="klr_nama", hx_swap_oob="innerHTML")
         
@@ -297,7 +298,7 @@ def ganti_klr():
     @lk_tengah.post("/klr_name")
     def fganti_klr(nm_klr:str, red:str, green:str, blue:str):
         klr = Warna(red,green,blue)
-        return klr.display_tbl_nm_kl(nm_klr)
+        return klr.display_tbl_nm_kl(nm_klr), klr.jdl_kl(nm_klr)
     return lk_tengah
 
 def main():
