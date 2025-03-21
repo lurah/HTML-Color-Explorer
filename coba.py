@@ -31,6 +31,28 @@ def jdl_kl():
     
     return Div(*sepan, style = sty)
 
+def rgb_distance(rgb1, rgb2):
+    r1, g1, b1 = rgb1
+    r2, g2, b2 = rgb2
+    return math.sqrt((r1 - r2)**2 + (g1 - g2)**2 + (b1 - b2)**2)
+
+def closest_named_color(target_rgb):
+    klr = ("blue", "brown", "gray", "green", "orange", "pink", "purple",
+            "red", "white", "yellow")
+    min = float("inf")
+    clst = None
+    for klr_i in klr:
+        for name, rgb in getattr(kolor, klr_i).items():
+            distance = rgb_distance(target_rgb, rgb)
+            if distance < min:
+                min = distance
+                clst = name
+                clst_pg = klr_i
+    return clst_pg, clst
+
+print(closest_named_color((255,0,0)))
+
+"""
 app = FastHTML()
 
 @app.post("/klr_name")
@@ -43,5 +65,5 @@ def main():
     return Main(jdl_kl(), Div(display_tbl_nm_kl("white"), style=sty))
 
 serve()
-
+"""
 

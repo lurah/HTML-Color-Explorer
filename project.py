@@ -106,24 +106,48 @@ class Warna():
                 margin: 10px; padding: 0 5px 0 5px; border: 1px solid black; "
         return Div(self.kotak_warna(), self.teks("rgb"), self.teks("hsl"), id="tengah", style=sty)
     
-    def nama_kolor(self, kol):
-        tabel_warna = getattr(kolor, f"kol")
-        sty_td = "border: 1px solid black; margin: 2px;"
-        nama_warna = list(Td(f" {sel} ",style=sty_td+f"color:{sel}") for sel in tabel_warna.keys())
-        jml_baris = len(nama_warna) // 5
-        jml_sisa = len(nama_warna) % 5
+    def display_tbl_nm_kl(self, kl):
+        tabel = getattr(kolor, kl)
+        tbl = []
+        for sel in tabel.keys():
+            kmplmn = f"rgb{tuple((255 - i) for i in tabel[sel])}"
+            if kl == "gray": kmplmn = f"rgb(255,255,255)" 
+            sty_td = f"text-align: center; padding: 6px; color: {kmplmn}; border-radius: 5%; \
+                    background-color: {sel}; font-size: .8rem; margin: 2px;"
+            tbl.append(Span(f"{sel}", style=f"{sty_td}"))
+        sty = f"display: flex; flex-direction: row; justify-content: flex-start; \
+                flex-wrap: wrap; padding: 2px"
+        return Div(*tbl, id="kolor", style=sty)
 
-        tabel = []
-        for sel in range(jml_baris):
-            baris = nama_warna[:5]
-            del nama_warna[:5]
-            tabel.append(Tr(*baris))
-        tabel.append(nama_warna)    
+    def jdl_kl(self):
+        judul = ("Red", "Pink", "Orange", "Yellow", "Purple", "Green", "Blue", "Brown",
+                 "White", "Gray")
+        sty_sp = f"background-color: paleturquoise; display: inline-block; padding: 4px 6px; \
+                   border-radius: 5%; margin: 2px; font-size: .8rem; font-weight: bold;"
+        sepan = []
+        for klr in judul:
+            vals = {"nm_klr":f"{klr.lower()}", "red": f"{self.red}", "green": f"{self.green}",
+                    "blue": f"{self.blue}"}
+            prm = {"hx_swap":"outerHTML", "hx_post":"/klr_name", "hx_trigger":"click", 
+                   "hx_target":"#kolor", "hx_vals":vals}
+            sepan.append(Span(klr, style=sty_sp, **prm))
+        sty = f"display: flex; flex-direction: row; justify-content: flex-start; \
+                flex-wrap: wrap; max-width: 300px; margin: 4px;"
+        return Div(*sepan, style = sty)
         
+    def klr_isi(self):
+        sty_klr = f"max-width: 300px;"
+        rgb = (int(self.red), int(self.green), int(self.blue))
+        pg_klr, _ = Warna.closest_named_color(rgb)
+        return Div(self.jdl_kl(), Hr(style="margin: 0;"), 
+                   Div(self.display_tbl_nm_kl(f"{pg_klr}"),style=sty_klr),
+                   id="klr_nama", hx_swap_oob="innerHTML")
         
     def semua(self):
-        sty = f"display: flex; justify-content: center; align-items: flex-start"
-        return Div(self.slider(), self.tengah(), style=sty)
+        sty_klr_isi = f"margin: 10px; border: 1px solid black;"
+        klr_lengkap = Div(self.klr_isi(), style = sty_klr_isi)
+        sty = f"display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap;"
+        return Div(self.slider(), self.tengah(), klr_lengkap, style=sty)
     
 
     @property
@@ -221,6 +245,27 @@ class Warna():
             b = hue_to_rgb(p, q, h - 1/3)
         return (round(r * 255), round(g * 255), round(b * 255))
 
+    @staticmethod
+    def rgb_distance(rgb1, rgb2):
+        r1, g1, b1 = rgb1
+        r2, g2, b2 = rgb2
+        return math.sqrt((r1 - r2)**2 + (g1 - g2)**2 + (b1 - b2)**2)
+
+    @staticmethod
+    def closest_named_color(target_rgb):
+        klr = ("blue", "brown", "gray", "green", "orange", "pink", "purple",
+               "red", "white", "yellow")
+        min = float("inf")
+        clst = None
+        for klr_i in klr:
+            for name, rgb in getattr(kolor, klr_i).items():
+                distance = Warna.rgb_distance(target_rgb, rgb)
+                if distance < min:
+                    min = distance
+                    clst = name
+                    clst_pg = klr_i
+        return clst_pg, clst
+
 def semua():
     lk_semua = APIRouter()
     @lk_semua.get("/")
@@ -241,15 +286,25 @@ def tengah():
             warna = {"red":rgb[0], "green":rgb[1], "blue":rgb[2]}
         else:
             warna = {"red":red, "green":green, "blue":blue}
-            kotak = Warna(**warna)
+        kotak = Warna(**warna)
         return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl"), \
-               kotak.slider_rgb() if data_cmp == "hsl" else kotak.slider_hsl()
+               kotak.slider_rgb() if data_cmp == "hsl" else kotak.slider_hsl(), \
+               kotak.klr_isi()
+    return lk_tengah
+
+def ganti_klr():
+    lk_tengah = APIRouter()
+    @lk_tengah.post("/klr_name")
+    def fganti_klr(nm_klr:str, red:str, green:str, blue:str):
+        klr = Warna(red,green,blue)
+        return klr.display_tbl_nm_kl(nm_klr)
     return lk_tengah
 
 def main():
     app = FastHTML()
     semua().to_app(app)
     tengah().to_app(app)
+    ganti_klr().to_app(app)
     return app
 
 
