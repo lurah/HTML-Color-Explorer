@@ -1,5 +1,7 @@
 import ast
+import math
 import kolor
+import itertools
 from fasthtml.common import *
 from starlette.testclient import TestClient
 
@@ -104,7 +106,21 @@ class Warna():
                 margin: 10px; padding: 0 5px 0 5px; border: 1px solid black; "
         return Div(self.kotak_warna(), self.teks("rgb"), self.teks("hsl"), id="tengah", style=sty)
     
+    def nama_kolor(self, kol):
+        tabel_warna = getattr(kolor, f"kol")
+        sty_td = "border: 1px solid black; margin: 2px;"
+        nama_warna = list(Td(f" {sel} ",style=sty_td+f"color:{sel}") for sel in tabel_warna.keys())
+        jml_baris = len(nama_warna) // 5
+        jml_sisa = len(nama_warna) % 5
 
+        tabel = []
+        for sel in range(jml_baris):
+            baris = nama_warna[:5]
+            del nama_warna[:5]
+            tabel.append(Tr(*baris))
+        tabel.append(nama_warna)    
+        
+        
     def semua(self):
         sty = f"display: flex; justify-content: center; align-items: flex-start"
         return Div(self.slider(), self.tengah(), style=sty)
