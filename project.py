@@ -1,9 +1,7 @@
 import ast
 import math
 import kolor
-import itertools
 from fasthtml.common import *
-from starlette.testclient import TestClient
 
 class Warna():
 
@@ -26,25 +24,29 @@ class Warna():
             filt = [item for item in ["#red", "#green", "#blue"] if item != f"#{rgbhsl}"]
             incl = ", ".join(filt) + ", #hue, #saturation, #lightness"
             vals = '{"data_cmp":"rgb"}'
+            span_akh = Span("255")
         else:
             nilai = self.hslnya()[rgbhsl]
             maks = "360" if rgbhsl == "hue" else "100"
             filt = [item for item in ["#hue", "#saturation", "#lightness"] if item != f"#{rgbhsl}"]
             incl = ", ".join(filt) + ", #red, #green, #blue"
             vals = '{"data_cmp":"hsl"}'
+            span_akh = Span("360") if rgbhsl == "hue" else Span("100")
         prm = {"type":"range", "min":"0", "max":maks, "hx_swap":"innerHTML",
                "hx_post":"/tengah", "hx_trigger":"input", "hx_target":"#tengah",
                "hx_include":incl, "hx_vals":vals,}
         lbl = Label(f"{rgbhsl.capitalize()}:", fr=rgbhsl)
         inp = Input(id=rgbhsl, name=rgbhsl, value=f"{nilai}", **prm)
+        span_awl = Span("0")
+        slid = Div(span_awl, inp, span_akh, style="display: flex; flex-direction:row;"), 
         div_sty = f"display: flex; flex-direction: column; justify-content: flex-start; \
                     margin: 5px;"
-        return Div(lbl, inp, style=div_sty)
+        return Div(lbl, slid, style=div_sty)
     
     def slider_rgb(self):
         sty_rgb_hsl = f"display: flex; flex-direction: column; justify-content: flex-start; \
                         align-items: center; border: 1px solid black; margin: 10px; \
-                        padding: 5px; min-width: 150px; max-width: 200px;"
+                        padding: 5px; min-width: 150px; max-width: 300px;"
         return Div(self.slider_cmp("rgb","red"), self.slider_cmp("rgb","green"),
                    self.slider_cmp("rgb","blue"), id="sldrgb", hx_swap_oob="innerHTML",
                    style=sty_rgb_hsl)
@@ -351,7 +353,6 @@ def main():
     name_kl().to_app(app)
     flt_nl().to_app(app)
     return app
-
 
 if __name__ == "__main__":
     uvicorn.run("project:main", host="127.0.0.1", port=8000, reload=True, factory=True)
