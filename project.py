@@ -113,33 +113,37 @@ class Warna():
             kmplmn = f"rgb{tuple((255 - i) for i in tabel[sel])}"
             if kl == "gray": kmplmn = f"rgb(255,255,255)" 
             sty_td = f"text-align: center; padding: 6px; color: {kmplmn}; border-radius: 5%; \
-                    background-color: {sel}; font-size: .8rem; margin: 2px;"
-            tbl.append(Span(f"{sel}", style=f"{sty_td}"))
+                       background-color: {sel}; font-size: .8rem; margin: 2px; cursor: pointer;"
+            prm_nm_kl = {"hx_swap":"innerHTML", "hx_post":"/name_klr", "hx_trigger":"click", 
+                         "hx_target":"#tengah", "hx_vals":{"name_klr":sel, "kl": kl}}
+            tbl.append(Span(f"{sel}", style=f"{sty_td}", **prm_nm_kl))
         sty = f"display: flex; flex-direction: row; justify-content: flex-start; \
                 flex-wrap: wrap; padding: 2px"
         return Div(*tbl, id="kolor", style=sty)
 
-    def jdl_kl(self):
+    def jdl_kl(self, kl):
         judul = ("Red", "Pink", "Orange", "Yellow", "Purple", "Green", "Blue", "Brown",
                  "White", "Gray")
         sty_sp = f"background-color: paleturquoise; display: inline-block; padding: 4px 6px; \
-                   border-radius: 5%; margin: 2px; font-size: .8rem; font-weight: bold;"
+                   border-radius: 5%; margin: 2px; font-size: .8rem; font-weight: bold; \
+                   color: black; cursor: pointer;"
         sepan = []
         for klr in judul:
+            sty_sp_blink = sty_sp if klr != kl.capitalize() else sty_sp + f" color: brown;"
             vals = {"nm_klr":f"{klr.lower()}", "red": f"{self.red}", "green": f"{self.green}",
                     "blue": f"{self.blue}"}
             prm = {"hx_swap":"outerHTML", "hx_post":"/klr_name", "hx_trigger":"click", 
                    "hx_target":"#kolor", "hx_vals":vals}
-            sepan.append(Span(klr, style=sty_sp, **prm))
+            sepan.append(Span(klr, style=sty_sp_blink, **prm))
         sty = f"display: flex; flex-direction: row; justify-content: flex-start; \
-                flex-wrap: wrap; max-width: 300px; margin: 4px;"
-        return Div(*sepan, style = sty)
+                flex-wrap: wrap; max-width: 300px; margin: 4px; background-color: papayawhip"
+        return Div(*sepan, id="jdl_klr", style = sty, hx_swap_oob="outerHTML")
         
     def klr_isi(self):
         sty_klr = f"max-width: 300px;"
         rgb = (int(self.red), int(self.green), int(self.blue))
         pg_klr, _ = Warna.closest_named_color(rgb)
-        return Div(self.jdl_kl(), Hr(style="margin: 0;"), 
+        return Div(self.jdl_kl(f"{pg_klr}"), Hr(style="margin: 0;"), 
                    Div(self.display_tbl_nm_kl(f"{pg_klr}"),style=sty_klr),
                    id="klr_nama", hx_swap_oob="innerHTML")
         
@@ -297,14 +301,25 @@ def ganti_klr():
     @lk_tengah.post("/klr_name")
     def fganti_klr(nm_klr:str, red:str, green:str, blue:str):
         klr = Warna(red,green,blue)
-        return klr.display_tbl_nm_kl(nm_klr)
+        return klr.display_tbl_nm_kl(nm_klr), klr.jdl_kl(nm_klr)
     return lk_tengah
 
+def name_kl():
+    lk_name_kl = APIRouter()
+    @lk_name_kl.post("/name_klr")
+    def name_kl(name_klr:str, kl:str):
+        r,g,b = getattr(kolor, kl)[name_klr]
+        kotak = Warna(f"{r}", f"{g}", f"{b}")
+        return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl"), \
+               kotak.slider_rgb(), kotak.slider_hsl()
+    return lk_name_kl
+    
 def main():
     app = FastHTML()
     semua().to_app(app)
     tengah().to_app(app)
     ganti_klr().to_app(app)
+    name_kl().to_app(app)
     return app
 
 
