@@ -157,7 +157,7 @@ class Warna():
         sty_klr_isi = f"margin: 10px; border: 1px solid black; max-width: 400px;"
         klr_lengkap = H2("Named Color", style="margin: 10px 0 0 0;"), Div(self.klr_isi(), style = sty_klr_isi)
         sty = f"display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap;"
-        return Div(Div(self.slider(), self.tengah(), style=sty),
+        return Title("Color Explorer"), Div(Div(self.slider(), self.tengah(), style=sty),
                    klr_lengkap, style="display: flex; flex-direction: column; align-items: center;")
     
 
