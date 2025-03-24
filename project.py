@@ -113,8 +113,10 @@ class Warna():
             kmplmn = f"rgb{tuple((255 - i) for i in tabel[sel])}"
             if kl == "gray": kmplmn = f"rgb(255,255,255)" 
             sty_td = f"text-align: center; padding: 6px; color: {kmplmn}; border-radius: 5%; \
-                    background-color: {sel}; font-size: .8rem; margin: 2px;"
-            tbl.append(Span(f"{sel}", style=f"{sty_td}"))
+                       background-color: {sel}; font-size: .8rem; margin: 2px; cursor: pointer;"
+            prm_nm_kl = {"hx_swap":"innerHTML", "hx_post":"/name_klr", "hx_trigger":"click", 
+                         "hx_target":"#tengah", "hx_vals":{"name_klr":sel, "kl": kl}}
+            tbl.append(Span(f"{sel}", style=f"{sty_td}", **prm_nm_kl))
         sty = f"display: flex; flex-direction: row; justify-content: flex-start; \
                 flex-wrap: wrap; padding: 2px"
         return Div(*tbl, id="kolor", style=sty)
@@ -123,7 +125,8 @@ class Warna():
         judul = ("Red", "Pink", "Orange", "Yellow", "Purple", "Green", "Blue", "Brown",
                  "White", "Gray")
         sty_sp = f"background-color: paleturquoise; display: inline-block; padding: 4px 6px; \
-                   border-radius: 5%; margin: 2px; font-size: .8rem; font-weight: bold; color: black;"
+                   border-radius: 5%; margin: 2px; font-size: .8rem; font-weight: bold; \
+                   color: black; cursor: pointer;"
         sepan = []
         for klr in judul:
             sty_sp_blink = sty_sp if klr != kl.capitalize() else sty_sp + f" color: brown;"
@@ -301,11 +304,22 @@ def ganti_klr():
         return klr.display_tbl_nm_kl(nm_klr), klr.jdl_kl(nm_klr)
     return lk_tengah
 
+def name_kl():
+    lk_name_kl = APIRouter()
+    @lk_name_kl.post("/name_klr")
+    def name_kl(name_klr:str, kl:str):
+        r,g,b = getattr(kolor, kl)[name_klr]
+        kotak = Warna(f"{r}", f"{g}", f"{b}")
+        return kotak.kotak_warna(), kotak.teks("rgb"), kotak.teks("hsl"), \
+               kotak.slider_rgb(), kotak.slider_hsl()
+    return lk_name_kl
+    
 def main():
     app = FastHTML()
     semua().to_app(app)
     tengah().to_app(app)
     ganti_klr().to_app(app)
+    name_kl().to_app(app)
     return app
 
 
