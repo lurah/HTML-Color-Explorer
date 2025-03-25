@@ -53,7 +53,7 @@ class Warna():
     def slider_hsl(self):
         sty_rgb_hsl = f"display: flex; flex-direction: column; justify-content: flex-start; \
                         align-items: center; border: 1px solid black; margin: 10px; \
-                        padding: 5px; min-width: 150px; max-width: 200px;"
+                        padding: 5px; min-width: 150px; max-width: 300px;"
         return Div(self.slider_cmp("hsl","hue"), self.slider_cmp("hsl","saturation"),
                    self.slider_cmp("hsl","lightness"),  id="sldhsl", hx_swap_oob="innerHTML",
                    style=sty_rgb_hsl)
@@ -76,33 +76,35 @@ class Warna():
             nilai = self.hslnya()[rgbhsl]
 
         lbl_sty = f"display: block; text-align: center; color: {warna}"
+        lbl = Label(f"{rgbhsl.capitalize()}", fr=f"rgb_{rgbhsl}", style=lbl_sty)
+
         inp_sty = f"height: 16px; margin: 3px 0; width: 25px; border: none; \
                     text-align: center; color: {warna}"
-        div_sty = f"display: flex; flex-direction: column; align-items: center; margin: 0 5px; \
-                    min-width: 50px; padding: 5px; border: 1px solid {warna}"
-
-        lbl = Label(f"{rgbhsl.capitalize()}", fr=f"rgb_{rgbhsl}", style=lbl_sty)
         val = {"tipe":tipe, "ist": self.warnanya(), "rgbhsl": rgbhsl}
         prm = {"type":"text", "hx_swap":"innerHTML", "hx_post":"/flt_nl", "hx_trigger":"change",
                "hx_target":"#tengah", "hx_vals": val}
         inp = Input(name=f"rgb_{rgbhsl}", id=f"rgb_{rgbhsl}",
                     value=f"{nilai}", style=inp_sty, **prm)
+        
+        div_sty = f"display: flex; flex-direction: column; align-items: center; margin: 0 5px; \
+                    min-width: 50px; padding: 5px; border: 1px solid {warna}"
         return Div(inp, lbl, style=div_sty)
     
     def teks(self, tipe:str):
         judul_sty = f"margin: 15px auto 5px auto; color: {self.warnanya()};"
-        each_sty = f"display: flex; justify-content: center;"
-        all_sty = f"display: flex; flex-direction: column; justify-content: center; \
-                    align-items: center; margin: 0px auto 10px auto;"
-        
         jdl_teks = "RGB Value" if tipe == "rgb" else "HSL Value"
         judul = H3(jdl_teks, style=judul_sty)
+
+        each_sty = f"display: flex; justify-content: center;"
         if tipe == "rgb":
             teks = Div(self.teks_cmp(tipe,"red"), self.teks_cmp(tipe,"green"),
                        self.teks_cmp(tipe,"blue"), style=each_sty)
         else:
             teks = Div(self.teks_cmp(tipe,"hue"), self.teks_cmp(tipe,"saturation"),
                        self.teks_cmp(tipe,"lightness"), style=each_sty)
+            
+        all_sty = f"display: flex; flex-direction: column; justify-content: center; \
+                    align-items: center; margin: 0px auto 10px auto;"
         return Div(judul, teks, style=all_sty)
 
     def tengah(self):
@@ -124,7 +126,7 @@ class Warna():
                          "hx_target":"#tengah", "hx_vals":{"name_klr":sel, "kl": kl}}
             tbl.append(Span(f"{sel}", style=f"{sty_td}", **prm_nm_kl))
         sty = f"display: flex; flex-direction: row; justify-content: flex-start; \
-                flex-wrap: wrap; padding: 2px"
+                flex-wrap: wrap; padding: 2px;"
         return Div(*tbl, id="kolor", style=sty)
 
     def jdl_kl(self, kl):
@@ -138,12 +140,12 @@ class Warna():
             sty_sp_blink = sty_sp if klr != kl.capitalize() else sty_sp + f" color: brown;"
             vals = {"nm_klr":f"{klr.lower()}", "red": f"{self.red}", "green": f"{self.green}",
                     "blue": f"{self.blue}"}
-            prm = {"hx_swap":"outerHTML", "hx_post":"/klr_name", "hx_trigger":"click", 
+            prm = {"hx_swap":"innerHTML", "hx_post":"/klr_name", "hx_trigger":"click", 
                    "hx_target":"#kolor", "hx_vals":vals}
             sepan.append(Span(klr, style=sty_sp_blink, **prm))
         sty = f"display: flex; flex-direction: row; justify-content: flex-start; \
-                flex-wrap: wrap; margin: 4px; background-color: papayawhip"
-        return Div(*sepan, id="jdl_klr", style = sty, hx_swap_oob="outerHTML")
+                flex-wrap: wrap; margin: 4px; background-color: papayawhip;"
+        return Div(*sepan, id="jdl_klr", style = sty, hx_swap_oob="innerHTML")
         
     def klr_isi(self):
         rgb = (int(self.red), int(self.green), int(self.blue))
