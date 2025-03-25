@@ -63,7 +63,7 @@ class Warna():
         return Div(H2("Slider", style="margin: 15px 0 0 0;"), self.slider_rgb(), self.slider_hsl(), style=sty)
 
     def kotak_warna(self):
-        sty = f"width: 60%; height: 50px; background-color: {self.warnanya()}; \
+        sty = f"width: 60%; height: 79px; background-color: {self.warnanya()}; \
                 border: 1px solid {self.warnanya()}; margin: 30px auto 10px auto;"
         return Div(id="warna", style=sty)
    
@@ -142,20 +142,20 @@ class Warna():
                    "hx_target":"#kolor", "hx_vals":vals}
             sepan.append(Span(klr, style=sty_sp_blink, **prm))
         sty = f"display: flex; flex-direction: row; justify-content: flex-start; \
-                flex-wrap: wrap; max-width: 300px; margin: 4px; background-color: papayawhip"
+                flex-wrap: wrap; margin: 4px; background-color: papayawhip"
         return Div(*sepan, id="jdl_klr", style = sty, hx_swap_oob="outerHTML")
         
     def klr_isi(self):
-        sty_klr = f"max-width: 300px;"
         rgb = (int(self.red), int(self.green), int(self.blue))
         pg_klr, _ = Warna.closest_named_color(rgb)
         return Div(self.jdl_kl(f"{pg_klr}"), Hr(style="margin: 0;"), 
-                   Div(self.display_tbl_nm_kl(f"{pg_klr}"),style=sty_klr),
+                   Div(self.display_tbl_nm_kl(f"{pg_klr}")),
                    id="klr_nama", hx_swap_oob="innerHTML")
         
     def semua(self):
-        sty_klr_isi = f"margin: 10px; border: 1px solid black; max-width: 400px;"
-        klr_lengkap = H2("Named Color", style="margin: 10px 0 0 0;"), Div(self.klr_isi(), style = sty_klr_isi)
+        sty_klr_isi = f"margin: 10px; border: 1px solid black; max-width: 485px;"
+        klr_lengkap = H2("Named Color", style="margin: 10px 0 0 0;"), \
+                      Div(self.klr_isi(), style = sty_klr_isi)
         sty = f"display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap;"
         return Title("Color Explorer"), Div(Div(self.slider(), self.tengah(), style=sty),
                    klr_lengkap, style="display: flex; flex-direction: column; align-items: center;")
