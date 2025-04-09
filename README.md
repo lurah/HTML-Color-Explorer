@@ -53,7 +53,7 @@ To run this application, follow these two simple steps:
 
 The web page will appear as shown below:
 
-![Screenshot of a comment on a GitHub issue showing an image, added in the Markdown, of an Octocat smiling and raising a tentacle.](https://github.com/lurah/lurah.github.io/blob/master/ColorEx.png?raw=true)
+![File ColorEx.png on the repo](https://github.com/lurah/HTML-Color-Explorer/blob/main/ColorEx.png)
 
 ## How to use this Application
 
