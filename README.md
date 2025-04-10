@@ -71,6 +71,6 @@ This simulation allows you to experiment with color components while observing h
 
 This application was developed as a final project requirement for *Harvard's CS50 Introduction to Programming with Python* course. While I strived to meet all project requirements, certain aspects, particularly the testing section, presented challenges. The main difficulty arose from using the FastHTML framework, whose functions primarily respond to browser requests and cannot be easily verified through conventional pytest methods.
 
-I invested significant time and effort into this project, though I acknowledge some limitations in meeting the strict testing requirements. The current application's appearance remains basic, as I haven't fully utilized the CSS framework capabilities provided by FastHTML. I plan to improve both the visual presentation and code organization in the future, particularly by cleaning up the cluttered style settings.
+I invested significant time and effort into this project, though I acknowledge some limitations in meeting the strict testing requirements. The current application's appearance remains basic, as I haven't fully utilized the CSS framework capabilities provided by *FastHTML*. I plan to improve both the visual presentation and code organization in the future, particularly by cleaning up the cluttered style settings.
 
 I welcome any contributions from others interested in enhancing this application. Your involvement could help make this project more robust and visually appealing.
